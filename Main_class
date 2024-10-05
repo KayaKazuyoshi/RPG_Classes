@@ -1,0 +1,73 @@
+import random
+import time
+class Character:
+	
+  def slow(self, string: str, x = 0.03, **kwargs): #Function used to print character's lines more naturally: they speak with some hesitation rather than printing it all at once
+		formatted_string = string.format(**kwargs)
+		for letter in formatted_string:
+			print(letter, end='', flush=True)
+			time.sleep(x)
+		print()
+        
+	def __init__(self, name, HP, attack_name): #Setting all character's features is put in different functions - just not to double the entering and updating the existing data
+		self.update_name(name)
+		self.update_HP(HP)
+		self.update_attack(attack_name)        
+        
+	def update_name(self, name):
+		if isinstance(name, str):
+			self.name = name
+			return f'Your character name is {self.name}.'
+		else:
+			raise ValueError('Invalid name type')
+        
+	def update_HP(self, HP):
+		if isinstance(HP, (int, float)):
+			self.HP = HP
+			if self.HP <= 0:
+				return self.slow('Set your character\'s HP to positive to continue your journey!')	#f' isn't need as there are no {} argments
+			return f'Your character HP equals {self.HP}.'
+		else:
+			raise ValueError('Invalid HP type: int or float needed')
+		
+        
+	def update_attack(self, attack_name):
+		if isinstance(attack_name, str):
+			self.attack_name = attack_name
+			return f'{self.name} uses {self.attack_name} to attack!'
+		else:
+			raise ValueError('Invalid attack type')
+        
+	def stats(self):
+		return self.slow(f'Hello! My name is {self.name}. My HP equals {self.HP} and I possess the power of {self.attack_name}. Type .attack to see me in combat!')
+    
+	def attack(self):
+		def setting_attack():
+			attack_points = round(random.random() * 100) #Here and later in defend: for RPG reasons it is better to be surprised on the values rather than set them immutably
+			return attack_points
+		attack_points = setting_attack()
+		while attack_points < 50: #We don't want to be the weaker, do we? ;)
+			attack_points = setting_attack()
+		return self.slow(f'Ha! My power of {self.attack_name} allows me to hit with {attack_points} points!')
+	
+  def defend(self, enemy):
+		if isinstance(enemy, str):
+			self.enemy = enemy
+		else:
+			raise ValueError('Invalid enemy name type')
+		self.slow(f'Oh no! During my journey I encountered {self.enemy}! I have to defend!')
+		def setting_defend():
+			defend_points = round(random.random() * 100)
+			return defend_points
+		defend_points = setting_defend()
+		while defend_points > 20: #To make sure our journey isn't going to end so soon
+			defend_points = setting_defend()
+		self.slow(f'Ugh! {self.enemy} is a tough guy! I got {defend_points} damage!')
+		new_HP = self.HP - defend_points
+		if new_HP > 0:
+			self.HP = new_HP
+			return self.slow(f'But I\'m even toughter! I still have {self.HP} HP!')
+		else:
+			self.slow('Oh no...! That was... too much... I\'m sorry...', x = 0.08)
+			time.sleep(2) #Let them rest in pepperoni in slow motion
+			self.update_HP(0) #We don't want our character to have negative HP!
